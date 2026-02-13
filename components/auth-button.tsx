@@ -25,17 +25,22 @@ export function AuthButton({ user }: { user: any }) {
         return (
             <div className="flex items-center gap-4">
                 <div className="flex flex-col items-end hidden sm:flex">
-                    <span className="text-sm font-medium">
+                    <span className="text-sm font-medium text-gray-900">
                         {user.user_metadata?.full_name || user.email?.split('@')[0]}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-gray-500">
                         {user.email}
                     </span>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs ring-2 ring-background">
+                <div className="h-9 w-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-700 font-semibold text-sm ring-1 ring-indigo-100">
                     {user.email?.[0].toUpperCase()}
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleLogout} className="text-muted-foreground hover:text-destructive">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleLogout}
+                    className="text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                >
                     <LogOut className="h-4 w-4" />
                     <span className="sr-only">Sign Out</span>
                 </Button>
@@ -54,6 +59,8 @@ export function AuthButton({ user }: { user: any }) {
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 488 512"
+                width="16"
+                height="16"
             >
                 <path
                     fill="currentColor"

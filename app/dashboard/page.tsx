@@ -24,16 +24,14 @@ export default async function Dashboard() {
         .order("created_at", { ascending: false });
 
     return (
-        <div className="min-h-screen bg-slate-50 relative">
-            <div className="absolute inset-0 bg-grid-slate-200 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
-
-            <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-                <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="min-h-screen bg-gray-50">
+            <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
+                <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold shadow-sm">
+                        <div className="w-8 h-8 rounded bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
                             SB
                         </div>
-                        <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                        <h1 className="text-lg font-semibold text-gray-900">
                             Smart Bookmarks
                         </h1>
                     </div>
@@ -41,16 +39,16 @@ export default async function Dashboard() {
                 </div>
             </header>
 
-            <main className="container mx-auto px-4 py-8 max-w-5xl">
+            <main className="max-w-5xl mx-auto px-4 py-8">
                 <div className="grid gap-8">
                     <section>
                         <BookmarkForm />
                     </section>
 
                     <section className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-bold tracking-tight">Your Bookmarks</h2>
-                            <span className="text-sm text-muted-foreground bg-white px-3 py-1 rounded-full border shadow-sm">
+                        <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+                            <h2 className="text-xl font-semibold text-gray-900">Your Bookmarks</h2>
+                            <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                                 {bookmarks?.length || 0} items
                             </span>
                         </div>

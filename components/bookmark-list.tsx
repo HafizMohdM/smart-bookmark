@@ -23,21 +23,29 @@ export function BookmarkList({ initialBookmarks, userId }: { initialBookmarks: B
                     event: '*',
                     schema: 'public',
                     table: 'bookmarks',
-                    filter: `user_id=eq.${userId}`,
                 },
                 (payload) => {
                     if (payload.eventType === 'INSERT') {
-                        setBookmarks((current) => [payload.new as Bookmark, ...current]);
+                        // Ensure the new bookmark belongs to the user
+                        const newBookmark = payload.new as Bookmark;
+                        if (newBookmark.user_id === userId) {
+                            setBookmarks((current) => [newBookmark, ...current]);
+                        }
                     } else if (payload.eventType === 'DELETE') {
+                        // For DELETE, payload.old only contains the ID (usually), so we filter by ID
+                        // This works regardless of user_id presence in payload.old
                         setBookmarks((current) =>
                             current.filter((bookmark) => bookmark.id !== payload.old.id)
                         );
                     } else if (payload.eventType === 'UPDATE') {
-                        setBookmarks((current) =>
-                            current.map((bookmark) =>
-                                bookmark.id === payload.new.id ? (payload.new as Bookmark) : bookmark
-                            )
-                        );
+                        const updatedBookmark = payload.new as Bookmark;
+                        if (updatedBookmark.user_id === userId) {
+                            setBookmarks((current) =>
+                                current.map((bookmark) =>
+                                    bookmark.id === updatedBookmark.id ? updatedBookmark : bookmark
+                                )
+                            );
+                        }
                     }
                 }
             )
@@ -84,65 +92,58 @@ export function BookmarkList({ initialBookmarks, userId }: { initialBookmarks: B
     }
 
     return (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {bookmarks.map((bookmark) => (
                 <Card
                     key={bookmark.id}
-                    className="overflow-hidden group hover:shadow-lg transition-all duration-200 border-slate-200 hover:border-blue-200 cursor-pointer"
+                    className="group hover:shadow-md transition-all duration-200 border-gray-200 hover:border-indigo-200"
                 >
-                    <CardContent className="p-0">
-                        <div className="flex flex-col h-full">
-                            <div className="p-5 flex-1 relative">
-                                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDelete(bookmark.id);
-                                        }}
+                    <CardContent className="p-5 flex flex-col h-full">
+                        <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 text-gray-500 font-bold text-sm uppercase ring-1 ring-gray-100">
+                                    {tryGetDomainInitial(bookmark.url)}
+                                </div>
+                                <div className="min-w-0">
+                                    <h3
+                                        className="font-medium text-gray-900 leading-tight truncate custom-truncate"
+                                        title={bookmark.title}
                                     >
-                                        <Trash2 className="h-4 w-4" />
-                                        <span className="sr-only">Delete</span>
-                                    </Button>
+                                        {bookmark.title}
+                                    </h3>
+                                    <p className="text-xs text-gray-400 mt-0.5">
+                                        {new Date(bookmark.created_at).toLocaleDateString('en-US', {
+                                            month: 'short',
+                                            day: 'numeric',
+                                            year: 'numeric'
+                                        })}
+                                    </p>
                                 </div>
-
-                                <div className="flex items-start gap-3 mb-3">
-                                    <div className="mt-1 w-8 h-8 rounded bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs font-bold uppercase select-none">
-                                        {/* Simple favicon fallback: first letter of domain */}
-                                        {tryGetDomainInitial(bookmark.url)}
-                                    </div>
-                                    <div className="min-w-0 flex-1 pr-6">
-                                        <h3
-                                            className="font-semibold text-slate-900 leading-tight mb-1 truncate"
-                                            title={bookmark.title}
-                                        >
-                                            {bookmark.title}
-                                        </h3>
-                                        <p className="text-xs text-slate-500">
-                                            {new Date(bookmark.created_at).toLocaleDateString('en-US', {
-                                                month: 'short',
-                                                day: 'numeric',
-                                                year: 'numeric'
-                                            })}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <a
-                                    href={bookmark.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm text-slate-500 hover:text-blue-600 truncate flex items-center gap-1.5 transition-colors group-hover:text-blue-600"
-                                >
-                                    <ExternalLink className="h-3.5 w-3.5" />
-                                    <span className="truncate">{shortenUrl(bookmark.url)}</span>
-                                </a>
                             </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-gray-300 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity -mr-2 -mt-2"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(bookmark.id);
+                                }}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Delete</span>
+                            </Button>
+                        </div>
 
-                            {/* Decorative bottom bar on hover */}
-                            <div className="h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                        <div className="mt-auto pt-2 border-t border-gray-50">
+                            <a
+                                href={bookmark.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-gray-500 hover:text-indigo-600 truncate flex items-center gap-1.5 transition-colors"
+                            >
+                                <ExternalLink className="h-3.5 w-3.5" />
+                                <span className="truncate">{shortenUrl(bookmark.url)}</span>
+                            </a>
                         </div>
                     </CardContent>
                 </Card>

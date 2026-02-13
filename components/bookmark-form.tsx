@@ -62,59 +62,59 @@ export function BookmarkForm() {
     };
 
     return (
-        <div className="bg-white rounded-xl border shadow-sm p-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
-                <Plus className="w-24 h-24 rotate-12" />
-            </div>
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <Plus className="w-5 h-5 text-indigo-600" />
+                Add New Bookmark
+            </h3>
 
-            <div className="relative">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <div className="p-1.5 bg-blue-50 rounded-md text-blue-600">
-                        <Plus className="w-4 h-4" />
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1">
+                        <label htmlFor="title" className="sr-only">Title</label>
+                        <Input
+                            id="title"
+                            placeholder="Bookmark Title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            required
+                            disabled={isLoading}
+                            className="h-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                        />
                     </div>
-                    Add New Bookmark
-                </h3>
-
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <div className="flex flex-col sm:flex-row gap-3 items-end">
-                        <div className="grid gap-2 flex-1 w-full">
-                            <Input
-                                placeholder="Title (e.g., Supabase Docs)"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                required
-                                disabled={isLoading}
-                                className="h-10"
-                            />
-                        </div>
-                        <div className="grid gap-2 flex-[2] w-full">
-                            <Input
-                                type="url"
-                                placeholder="URL (e.g., https://supabase.com/docs)"
-                                value={url}
-                                onChange={(e) => setUrl(e.target.value)}
-                                required
-                                disabled={isLoading}
-                                className="h-10 font-mono text-sm"
-                            />
-                        </div>
-                        <Button type="submit" disabled={isLoading} className="h-10 px-6 shrink-0 bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm text-white">
-                            {isLoading ? (
-                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            ) : (
-                                <Plus className="h-4 w-4 mr-2" />
-                            )}
-                            Add
-                        </Button>
+                    <div className="flex-[2]">
+                        <label htmlFor="url" className="sr-only">URL</label>
+                        <Input
+                            id="url"
+                            type="url"
+                            placeholder="https://example.com"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            required
+                            disabled={isLoading}
+                            className="h-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 font-mono text-sm"
+                        />
                     </div>
-                    {errorMsg && (
-                        <p className="text-sm text-red-500 bg-red-50 p-3 rounded-md border border-red-100 flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                            {errorMsg}
-                        </p>
-                    )}
-                </form>
-            </div>
+                    <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className="h-10 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-sm transition-colors"
+                    >
+                        {isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        ) : (
+                            <Plus className="h-4 w-4 mr-2" />
+                        )}
+                        Add
+                    </Button>
+                </div>
+                {errorMsg && (
+                    <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-100 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-600" />
+                        {errorMsg}
+                    </div>
+                )}
+            </form>
         </div>
     );
 }
