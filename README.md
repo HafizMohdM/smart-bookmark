@@ -52,3 +52,25 @@ The app uses Supabase Realtime to listen for database changes:
 - **events**: INSERT, UPDATE, DELETE on `public.bookmarks`
 - **filtering**: Client-side filtering ensures UI consistency while respecting RLS.
 
+**Problems Faced & How I Resolved Them**
+1. **Google OAuth “Provider Not Enabled” Error**
+
+Problem:While implementing Google login using Supabase Auth, authentication failed with the error:
+
+      **Unsupported provider: provider is not enabled**
+Even though the frontend was correctly calling signInWithOAuth({ provider: "google" }), Supabase rejected the request.
+
+**Root Cause:**
+Supabase requires OAuth providers to be explicitly enabled and configured in the dashboard.
+The Google provider was disabled and missing valid OAuth credentials from Google Cloud Console.
+
+**Solution:**
+Created OAuth credentials (Client ID & Secret) in Google Cloud Console
+Added required redirect URIs:
+http://localhost:3000/auth/callback
+https://<project-id>.supabase.co/auth/v1/callback
+Enabled the Google provider in Supabase Authentication settings
+Restarted the application
+**Outcome:**
+Google OAuth login worked correctly and redirected users to the dashboard.
+
